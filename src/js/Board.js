@@ -35,6 +35,20 @@ class Board {
     getEmptyBoard() {
         return [...Array(ROWS)].map(() => Array(COLS).fill(0))
     }
+
+    rotateTetromino(p) {
+        const clone = JSON.parse(JSON.stringify(p));
+
+        for (let y = 0; y < clone.shape.length; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [clone.shape[x][y], clone.shape[y][x]] = [clone.shape[y][x], clone.shape[x][y]];
+            }
+        }
+
+        clone.shape.forEach(row => row.reverse());
+
+        return clone;
+    }
 }
 
 export default Board
