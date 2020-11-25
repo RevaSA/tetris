@@ -1,4 +1,4 @@
-import { ROWS, COLS } from './constants'
+import { ROWS, COLS, KEY, MOVES } from './constants'
 
 class Board {
     constructor() {
@@ -36,18 +36,16 @@ class Board {
         return [...Array(ROWS)].map(() => Array(COLS).fill(0))
     }
 
-    rotateTetromino(p) {
-        const clone = JSON.parse(JSON.stringify(p));
+    draw() {
+        this.tetromino.draw();
+    }
 
-        for (let y = 0; y < clone.shape.length; ++y) {
-            for (let x = 0; x < y; ++x) {
-                [clone.shape[x][y], clone.shape[y][x]] = [clone.shape[y][x], clone.shape[x][y]];
-            }
+    drop() {
+        const p = MOVES[KEY.DOWN](this.tetromino);
+
+        if (this.valid(p)) {
+            this.tetromino.move(p);
         }
-
-        clone.shape.forEach(row => row.reverse());
-
-        return clone;
     }
 }
 

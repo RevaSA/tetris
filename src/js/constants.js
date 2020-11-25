@@ -16,6 +16,22 @@ export const KEY = {
     RIGHT: 39,
     DOWN: 40,
 }
+export const MOVES = {
+    [KEY.SPACE]: p => ({ ...p, y: p.y + 1 }),
+    [KEY.LEFT]: p => ({ ...p, x: p.x - 1 }),
+    [KEY.UP]: p => {
+        for (let y = 0; y < p.shape.length; ++y) {
+            for (let x = 0; x < y; ++x) {
+                [p.shape[x][y], p.shape[y][x]] = [p.shape[y][x], p.shape[x][y]];
+            }
+        }
+
+        p.shape.forEach(row => row.reverse());
+        return p;
+    },
+    [KEY.RIGHT]: p => ({ ...p, x: p.x + 1 }),
+    [KEY.DOWN]: p => ({ ...p, y: p.y + 1 }),
+}
 export const COLORS = [
     'cyan',
     'blue',

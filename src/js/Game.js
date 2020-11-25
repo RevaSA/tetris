@@ -1,4 +1,4 @@
-import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY } from './constants'
+import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY, MOVES } from './constants'
 import Board from './Board'
 import Tetromino from './Tetromino'
 
@@ -13,13 +13,7 @@ class Game {
     cache() {
         this.canvas = document.querySelector(SELECTORS.canvas)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
-        this.moves = {
-            [KEY.SPACE]: p => ({ ...p, y: p.y + 1 }),
-            [KEY.LEFT]: p => ({ ...p, x: p.x - 1 }),
-            [KEY.UP]: p => this.board.rotateTetromino(p),
-            [KEY.RIGHT]: p => ({ ...p, x: p.x + 1 }),
-            [KEY.DOWN]: p => ({ ...p, y: p.y + 1 }),
-        }
+        this.time = { start: 0, elapsed: 0, level: 1000 }
     }
 
     events() {
@@ -35,21 +29,21 @@ class Game {
     }
 
     play() {
-        this.board.reset()
-        let tetromino = new Tetromino(this.ctx)
-        tetromino.draw()
+        const tetromino = new Tetromino(this.ctx)
 
-        this.board.tetromino = tetromino
-        console.table(this.board.grid)
+        this.board.reset();
+        this.board.tetromino = tetromino;
+        this.board.tetromino.setStartPosition();
+        this.animate();
     }
 
     moveTetromino(event) {
-        if (!this.moves[event.keyCode]) {
+        if (!MOVES[event.keyCode]) {
             return
         }
 
         event.preventDefault()
-        let p = this.moves[event.keyCode](this.board.tetromino)
+        let p = MOVES[event.keyCode](this.board.tetromino)
 
         if (event.keyCode === KEY.SPACE) {
             // Жесткое падение
@@ -57,7 +51,7 @@ class Game {
                 this.board.tetromino.move(p)
                 this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
                 this.board.tetromino.draw()
-                p = this.moves[KEY.DOWN](this.board.tetromino)
+                p = MOVES[KEY.DOWN](this.board.tetromino)
             }
         } else if (this.board.valid(p)) {
             // реальное перемещение фигурки, если новое положение допустимо
@@ -68,6 +62,27 @@ class Game {
 
             this.board.tetromino.draw()
         }
+    }
+
+    animate(now = 0) {
+        // обновить истекшее время
+        this.time.elapsed = now - this.time.start;
+
+        // если время отображения текущего фрейма прошло
+        if (this.time.elapsed > this.time.level) {
+            // начать отсчет сначала
+            this.time.start = now;
+
+            // "уронить" активную фигурку
+            this.board.drop();
+        }
+
+        // очистить холст для отрисовки нового фрейма
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+        // отрисовать игровое поле
+        this.board.draw();
+        requestAnimationFrame(this.animate.bind(this));
     }
 }
 
