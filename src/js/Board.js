@@ -9,6 +9,10 @@ class Board {
         this.grid = this.getEmptyBoard()
     }
 
+    valid(p) {
+        return true;
+    }
+
     getEmptyBoard() {
         return [...Array(ROWS)].map(() => Array(COLS).fill(0))
     }

@@ -9,3 +9,8 @@ export const SELECTORS = {
     level: '[data-level]',
     buttonPlay: '[data-button-play]',
 }
+export const KEY = {
+    LEFT: 37,
+    RIGHT: 39,
+    DOWN: 40,
+}

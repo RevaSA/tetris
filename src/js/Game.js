@@ -1,4 +1,4 @@
-import { ROWS, COLS, BLOCK_SIZE, SELECTORS } from './constants'
+import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY } from './constants'
 import Board from './Board'
 import Tetromino from './Tetromino'
 
@@ -13,10 +13,16 @@ class Game {
     cache() {
         this.canvas = document.querySelector(SELECTORS.canvas)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
+        this.moves = {
+            [KEY.LEFT]: p => ({ ...p, x: p.x - 1 }),
+            [KEY.RIGHT]: p => ({ ...p, x: p.x + 1 }),
+            [KEY.DOWN]: p => ({ ...p, y: p.y + 1 }),
+        }
     }
 
     events() {
         this.buttonPlay.addEventListener('click', this.play.bind(this))
+        document.addEventListener('keydown', this.moveTetromino.bind(this))
     }
 
     initCanvas() {
@@ -33,6 +39,27 @@ class Game {
 
         this.board.tetromino = tetromino
         console.table(this.board.grid)
+    }
+
+    moveTetromino(event) {
+        if (!this.moves[event.keyCode]) {
+            return
+        }
+
+        event.preventDefault()
+
+        const p = this.moves[event.keyCode](this.board.tetromino)
+
+        // проверка нового положения
+        if (this.board.valid(p)) {
+            // реальное перемещение фигурки, если новое положение допустимо
+            this.board.tetromino.move(p)
+
+            // стирание старого отображения фигуры на холсте
+            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+
+            this.board.tetromino.draw()
+        }
     }
 }
 

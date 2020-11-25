@@ -7,8 +7,6 @@ class Tetromino {
             [2, 2, 2],
             [0, 0, 0]
         ]
-
-        // Начальная позиция
         this.x = 3
         this.y = 0
     }
@@ -25,6 +23,11 @@ class Tetromino {
                 }
             })
         })
+    }
+
+    move(p) {
+        this.x = p.x;
+        this.y = p.y;
     }
 }
 
