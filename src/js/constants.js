@@ -10,6 +10,7 @@ export const SELECTORS = {
     buttonPlay: '[data-button-play]',
 }
 export const KEY = {
+    SPACE: 32,
     LEFT: 37,
     RIGHT: 39,
     DOWN: 40,

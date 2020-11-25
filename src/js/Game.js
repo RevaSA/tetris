@@ -14,6 +14,7 @@ class Game {
         this.canvas = document.querySelector(SELECTORS.canvas)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
         this.moves = {
+            [KEY.SPACE]: p => ({ ...p, y: p.y + 1 }),
             [KEY.LEFT]: p => ({ ...p, x: p.x - 1 }),
             [KEY.RIGHT]: p => ({ ...p, x: p.x + 1 }),
             [KEY.DOWN]: p => ({ ...p, y: p.y + 1 }),
@@ -47,11 +48,17 @@ class Game {
         }
 
         event.preventDefault()
+        let p = this.moves[event.keyCode](this.board.tetromino)
 
-        const p = this.moves[event.keyCode](this.board.tetromino)
-
-        // проверка нового положения
-        if (this.board.valid(p)) {
+        if (event.keyCode === KEY.SPACE) {
+            // Жесткое падение
+            while (this.board.valid(p)) {
+                this.board.tetromino.move(p)
+                this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+                this.board.tetromino.draw()
+                p = this.moves[KEY.DOWN](this.board.tetromino)
+            }
+        } else if (this.board.valid(p)) {
             // реальное перемещение фигурки, если новое положение допустимо
             this.board.tetromino.move(p)
 
