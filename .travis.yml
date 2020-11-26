@@ -10,3 +10,6 @@ deploy:
     # Нужно сгенерировать тут: https://github.com/settings/tokens и добавить в настройки репозитория в Тревисе
     github_token: $GITHUB_TOKEN
     local_dir: dist # название директории, из которой будут отдаваться файлы на сервере
+    branches:
+        only:
+            - main
