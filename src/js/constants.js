@@ -50,3 +50,11 @@ export const SHAPES = [
     [[0, 6, 0], [6, 6, 6], [0, 0, 0]],
     [[7, 7, 0], [0, 7, 7], [0, 0, 0]]
 ]
+export const POINTS = {
+    SINGLE: 100,
+    DOUBLE: 300,
+    TRIPLE: 500,
+    TETRIS: 800,
+    SOFT_DROP: 1,
+    HARD_DROP: 2,
+}

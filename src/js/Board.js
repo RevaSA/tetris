@@ -1,9 +1,10 @@
-import { ROWS, COLS, KEY, MOVES, COLORS } from './constants'
+import { ROWS, COLS, KEY, MOVES, COLORS, POINTS } from './constants'
 import Tetromino from './Tetromino'
 
 class Board {
-    constructor(ctx) {
+    constructor(ctx, account) {
         this.ctx = ctx
+        this.account = account
         this.tetromino = null
     }
 
@@ -76,6 +77,11 @@ class Board {
         });
     }
 
+    getLineClearPoints(countLines) {
+        const lines = [0, POINTS.SINGLE, POINTS.DOUBLE, POINTS.TRIPLE, POINTS.SINGLE, POINTS.TETRIS]
+        return lines[countLines]
+    }
+
     clearLines() {
         let lines = 0;
 
@@ -86,6 +92,10 @@ class Board {
                 this.grid.unshift(Array(COLS).fill(0));
             }
         });
+
+        if (lines > 0) {
+            this.account.score += this.getLineClearPoints(lines);
+        }
     }
 }
 

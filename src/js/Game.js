@@ -1,4 +1,4 @@
-import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY, MOVES } from './constants'
+import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY, MOVES, POINTS } from './constants'
 import Board from './Board'
 import Tetromino from './Tetromino'
 
@@ -7,13 +7,17 @@ class Game {
         this.cache()
         this.events()
         this.initCanvas()
-        this.board = new Board(this.ctx)
+        this.initProxyAccountValues()
+        this.board = new Board(this.ctx, this.account)
     }
 
     cache() {
         this.canvas = document.querySelector(SELECTORS.canvas)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
         this.time = { start: 0, elapsed: 0, level: 1000 }
+        this.accountElements = {
+            score: document.querySelector(SELECTORS.score)
+        }
     }
 
     events() {
@@ -26,6 +30,20 @@ class Game {
         this.ctx.canvas.width = COLS * BLOCK_SIZE
         this.ctx.canvas.height = ROWS * BLOCK_SIZE
         this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+    }
+
+    initProxyAccountValues() {
+        const accountValues = {
+            score: 0,
+        }
+
+        this.account = new Proxy(accountValues, {
+            set: (target, key, value) => {
+                target[key] = value;
+                this.updateAccount(key, value);
+                return true;
+            }
+        });
     }
 
     play() {
@@ -46,21 +64,17 @@ class Game {
         let p = MOVES[event.keyCode](this.board.tetromino)
 
         if (event.keyCode === KEY.SPACE) {
-            // Жесткое падение
             while (this.board.valid(p)) {
+                this.account.score += POINTS.HARD_DROP;
                 this.board.tetromino.move(p)
-                this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-                this.board.tetromino.draw()
                 p = MOVES[KEY.DOWN](this.board.tetromino)
             }
         } else if (this.board.valid(p)) {
-            // реальное перемещение фигурки, если новое положение допустимо
             this.board.tetromino.move(p)
 
-            // стирание старого отображения фигуры на холсте
-            this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
-
-            this.board.tetromino.draw()
+            if (event.keyCode === KEY.DOWN) {
+                this.account.score += POINTS.SOFT_DROP;
+            }
         }
     }
 
@@ -83,6 +97,14 @@ class Game {
         // отрисовать игровое поле
         this.board.draw();
         requestAnimationFrame(this.animate.bind(this));
+    }
+
+    updateAccount(key, value) {
+        const element = this.accountElements[key];
+
+        if (element) {
+            element.textContent = value;
+        }
     }
 }
 
