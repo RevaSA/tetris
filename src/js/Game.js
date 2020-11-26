@@ -7,7 +7,7 @@ class Game {
         this.cache()
         this.events()
         this.initCanvas()
-        this.board = new Board()
+        this.board = new Board(this.ctx)
     }
 
     cache() {

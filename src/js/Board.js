@@ -1,7 +1,9 @@
-import { ROWS, COLS, KEY, MOVES } from './constants'
+import { ROWS, COLS, KEY, MOVES, COLORS } from './constants'
+import Tetromino from './Tetromino'
 
 class Board {
-    constructor() {
+    constructor(ctx) {
+        this.ctx = ctx
         this.tetromino = null
     }
 
@@ -38,14 +40,39 @@ class Board {
 
     draw() {
         this.tetromino.draw();
+        this.drawBoard();
+    }
+
+    drawBoard() {
+        this.grid.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value) {
+                    this.ctx.fillStyle = COLORS[value - 1];
+                    this.ctx.fillRect(x, y, 1, 1);
+                }
+            });
+        });
     }
 
     drop() {
         const p = MOVES[KEY.DOWN](this.tetromino);
-
         if (this.valid(p)) {
             this.tetromino.move(p);
+        } else {
+            this.freeze();
+            this.tetromino = new Tetromino(this.ctx);
+            this.tetromino.setStartPosition();
         }
+    }
+
+    freeze() {
+        this.tetromino.shape.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value > 0) {
+                    this.grid[y + this.tetromino.y][x + this.tetromino.x] = value;
+                }
+            });
+        });
     }
 }
 
