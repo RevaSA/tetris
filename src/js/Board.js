@@ -2,14 +2,18 @@ import { ROWS, COLS, KEY, MOVES, COLORS } from './constants'
 import Tetromino from './Tetromino'
 
 class Board {
-    constructor(ctx, account) {
+    constructor(ctx, ctxNext, account) {
         this.ctx = ctx
+        this.ctxNext = ctxNext
         this.account = account
         this.tetromino = null
     }
 
     reset() {
         this.grid = this.getEmptyBoard()
+        this.tetromino = new Tetromino(this.ctx);
+        this.tetromino.setStartPosition();
+        this.getNewPiece();
     }
 
     valid(p) {
@@ -68,8 +72,10 @@ class Board {
                 return false
             }
 
-            this.tetromino = new Tetromino(this.ctx);
+            this.tetromino = this.next;
+            this.tetromino.ctx = this.ctx;
             this.tetromino.setStartPosition();
+            this.getNewPiece();
         }
 
         return true
@@ -97,6 +103,12 @@ class Board {
         });
 
         this.account.values.lines += lines
+    }
+
+    getNewPiece() {
+        this.next = new Tetromino(this.ctxNext)
+        this.ctxNext.clearRect(0, 0, this.ctxNext.canvas.width, this.ctxNext.canvas.height)
+        this.next.draw()
     }
 }
 

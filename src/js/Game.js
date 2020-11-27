@@ -7,14 +7,15 @@ class Game {
     constructor() {
         this.cache()
         this.events()
-        this.initCanvas()
+        this.initCanvases()
         this.account = new Account()
-        this.board = new Board(this.ctx, this.account)
+        this.board = new Board(this.ctx, this.ctxNext, this.account)
         this.account.subscribe('level', this.onChangeLevel.bind(this))
     }
 
     cache() {
         this.canvas = document.querySelector(SELECTORS.canvas)
+        this.canvasNext = document.querySelector(SELECTORS.canvasNext)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
         this.time = { start: 0, elapsed: 0, level: 1000 }
     }
@@ -24,11 +25,15 @@ class Game {
         document.addEventListener('keydown', this.moveTetromino.bind(this))
     }
 
-    initCanvas() {
+    initCanvases() {
         this.ctx = this.canvas.getContext('2d')
         this.ctx.canvas.width = COLS * BLOCK_SIZE
         this.ctx.canvas.height = ROWS * BLOCK_SIZE
         this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
+        this.ctxNext = this.canvasNext.getContext('2d')
+        this.ctxNext.canvas.width = 4 * BLOCK_SIZE
+        this.ctxNext.canvas.height = 4 * BLOCK_SIZE
+        this.ctxNext.scale(BLOCK_SIZE, BLOCK_SIZE)
     }
 
     resetGame() {
