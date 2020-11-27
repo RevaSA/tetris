@@ -1,4 +1,4 @@
-import { ROWS, COLS, KEY, MOVES, COLORS, POINTS } from './constants'
+import { ROWS, COLS, KEY, MOVES, COLORS } from './constants'
 import Tetromino from './Tetromino'
 
 class Board {
@@ -77,11 +77,6 @@ class Board {
         });
     }
 
-    getLineClearPoints(countLines) {
-        const lines = [0, POINTS.SINGLE, POINTS.DOUBLE, POINTS.TRIPLE, POINTS.SINGLE, POINTS.TETRIS]
-        return lines[countLines]
-    }
-
     clearLines() {
         let lines = 0;
 
@@ -93,9 +88,7 @@ class Board {
             }
         });
 
-        if (lines > 0) {
-            this.account.score += this.getLineClearPoints(lines);
-        }
+        this.account.values.lines += lines
     }
 }
 

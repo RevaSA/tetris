@@ -1,23 +1,22 @@
-import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY, MOVES, POINTS } from './constants'
+import { ROWS, COLS, BLOCK_SIZE, SELECTORS, KEY, MOVES, POINTS, TIME_STEP, TIME_MIN } from './constants'
 import Board from './Board'
 import Tetromino from './Tetromino'
+import Account from './Account';
 
 class Game {
     constructor() {
         this.cache()
         this.events()
         this.initCanvas()
-        this.initProxyAccountValues()
         this.board = new Board(this.ctx, this.account)
+        this.account = new Account()
+        this.account.subscribe('level', this.onChangeLevel.bind(this))
     }
 
     cache() {
         this.canvas = document.querySelector(SELECTORS.canvas)
         this.buttonPlay = document.querySelector(SELECTORS.buttonPlay)
         this.time = { start: 0, elapsed: 0, level: 1000 }
-        this.accountElements = {
-            score: document.querySelector(SELECTORS.score)
-        }
     }
 
     events() {
@@ -32,27 +31,16 @@ class Game {
         this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE)
     }
 
-    initProxyAccountValues() {
-        const accountValues = {
-            score: 0,
-        }
-
-        this.account = new Proxy(accountValues, {
-            set: (target, key, value) => {
-                target[key] = value;
-                this.updateAccount(key, value);
-                return true;
-            }
-        });
+    resetGame() {
+        this.account.reset()
+        this.board.reset()
+        this.board.tetromino = new Tetromino(this.ctx)
+        this.board.tetromino.setStartPosition()
     }
 
     play() {
-        const tetromino = new Tetromino(this.ctx)
-
-        this.board.reset();
-        this.board.tetromino = tetromino;
-        this.board.tetromino.setStartPosition();
-        this.animate();
+        this.resetGame()
+        this.animate()
     }
 
     moveTetromino(event) {
@@ -65,7 +53,7 @@ class Game {
 
         if (event.keyCode === KEY.SPACE) {
             while (this.board.valid(p)) {
-                this.account.score += POINTS.HARD_DROP;
+                this.account.values.score += POINTS.HARD_DROP
                 this.board.tetromino.move(p)
                 p = MOVES[KEY.DOWN](this.board.tetromino)
             }
@@ -73,7 +61,7 @@ class Game {
             this.board.tetromino.move(p)
 
             if (event.keyCode === KEY.DOWN) {
-                this.account.score += POINTS.SOFT_DROP;
+                this.account.values.score += POINTS.SOFT_DROP
             }
         }
     }
@@ -99,12 +87,8 @@ class Game {
         requestAnimationFrame(this.animate.bind(this));
     }
 
-    updateAccount(key, value) {
-        const element = this.accountElements[key];
-
-        if (element) {
-            element.textContent = value;
-        }
+    onChangeLevel() {
+        this.time.level = Math.max(this.time.level - TIME_STEP, TIME_MIN)
     }
 }
 

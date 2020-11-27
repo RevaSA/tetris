@@ -58,3 +58,6 @@ export const POINTS = {
     SOFT_DROP: 1,
     HARD_DROP: 2,
 }
+export const LINES_PER_LEVEL = 2
+export const TIME_STEP = 100
+export const TIME_MIN = 100
