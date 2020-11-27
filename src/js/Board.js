@@ -62,9 +62,17 @@ class Board {
         } else {
             this.freeze();
             this.clearLines();
+
+            if (this.tetromino.y === 0) {
+                // Game over
+                return false
+            }
+
             this.tetromino = new Tetromino(this.ctx);
             this.tetromino.setStartPosition();
         }
+
+        return true
     }
 
     freeze() {

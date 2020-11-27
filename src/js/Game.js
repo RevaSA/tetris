@@ -8,8 +8,8 @@ class Game {
         this.cache()
         this.events()
         this.initCanvas()
-        this.board = new Board(this.ctx, this.account)
         this.account = new Account()
+        this.board = new Board(this.ctx, this.account)
         this.account.subscribe('level', this.onChangeLevel.bind(this))
     }
 
@@ -76,7 +76,10 @@ class Game {
             this.time.start = now;
 
             // "уронить" активную фигурку
-            this.board.drop();
+            if (!this.board.drop()) {
+                this.gameOver()
+                return
+            }
         }
 
         // очистить холст для отрисовки нового фрейма
@@ -84,11 +87,20 @@ class Game {
 
         // отрисовать игровое поле
         this.board.draw();
-        requestAnimationFrame(this.animate.bind(this));
+        this.requestId = requestAnimationFrame(this.animate.bind(this));
     }
 
     onChangeLevel() {
         this.time.level = Math.max(this.time.level - TIME_STEP, TIME_MIN)
+    }
+
+    gameOver() {
+        cancelAnimationFrame(this.requestId);
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(1, 3, 8, 1.2);
+        this.ctx.font = '1px Arial';
+        this.ctx.fillStyle = 'red';
+        this.ctx.fillText('GAME OVER', 1.8, 4);
     }
 }
 
